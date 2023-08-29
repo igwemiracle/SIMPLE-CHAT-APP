@@ -1,5 +1,6 @@
 from fastapi import Depends, HTTPException, status, APIRouter
 from Authentication.hash_pwd import HashPassword
+from Authentication.jwt_handler import verify_access_token
 from Database.connection import get_db
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
@@ -8,7 +9,6 @@ from Models.sqlData import Users
 from Models.schema import UserValidate, Token
 from Routes.crud import createRegisteredUser, findUser, findUserExist, get_current_user
 from Authentication.jwt_handler import create_access_token
-from fastapi.security import OAuth2PasswordRequestForm
 
 
 UserType = {
@@ -50,19 +50,19 @@ async def SignIn(auth: UserValidate,
             "token_type": "Bearer"
         }
     raise HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Invalid details passed."
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="User do not exist."
     )
 
 
 @user_route.get("/auth/view_users")
 async def ViewAllUsers(token: str = Depends(authenticate),
                        db: AsyncSession = Depends(get_db)):
-    print("===", token)
     if token["is_admin"] == UserType["is_user"]:
+
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Not an Admin")
-
+    # print("Is admin==============", token["is_admin"])
     results = await db.execute(select(Users))
     users = results.scalars().all()
     return users
@@ -81,22 +81,3 @@ async def ViewUser(current_user: str = Depends(get_current_user),
         "email": user.email,
         "password": user.hash_password
     }
-
-# ------------------USE THIS FUNCTION FOR ACCESS TOKEN----------------------
-# @user_route.post("/auth/signin/", response_model=Token)
-# async def SignIn(valid: UserValidate,
-#                  db: AsyncSession = Depends(get_db)) -> dict:
-#     user = await findUser(username=valid.username, db=db)
-#     if not user:
-#         raise HTTPException(status_code=401, detail="Wrong Credentials")
-
-#     if HASH.verify_hash(valid.password, user.hash_password):
-#         access_token = create_access_token(user.username)
-#         return {
-#             "access_token": access_token,
-#             "token_type": "Bearer"
-#         }
-#     raise HTTPException(
-#         status_code=status.HTTP_401_UNAUTHORIZED,
-#         detail="Invalid details passed."
-#     )
