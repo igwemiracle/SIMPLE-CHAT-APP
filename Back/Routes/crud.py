@@ -6,7 +6,6 @@ from Authentication.auth import oauth2_scheme
 from Authentication.jwt_handler import verify_access_token
 from Database.connection import get_db
 from Models.sqlData import Users
-from fastapi.security import OAuth2PasswordRequestForm
 
 HASH = HashPassword()
 
@@ -27,7 +26,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
             status_code=status.HTTP_403_FORBIDDEN, detail="Sign in for access")
 
     decoded_token = verify_access_token(token)
-    return decoded_token["user"]
+    return decoded_token["username"]
 
 
 async def findUserExist(email: str, db: AsyncSession = Depends(get_db)):
