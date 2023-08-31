@@ -1,5 +1,4 @@
 import time
-from datetime import datetime
 from fastapi import HTTPException, status
 from jose import jwt
 from jwt.exceptions import DecodeError
@@ -12,9 +11,9 @@ config = Config(".env")
 
 def create_access_token(username: str, is_admin: bool) -> str:
     payload = {
-        "username": "Miracle",
+        "username": username,
         "is_admin": is_admin,
-        "expires": time.time() + 3600
+        "expires": time.time() + 600
     }
     token = jwt.encode(payload, SECRET_KEY,
                        algorithm=config.get("ALGORITHM"))
