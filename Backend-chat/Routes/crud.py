@@ -41,19 +41,7 @@ async def get_user_by_username(username: str, db: AsyncSession = Depends(get_db)
     return result.scalar()
 
 
-async def findUser(username: str, db: AsyncSession = Depends(get_db)):
+async def findUser(user: str, db: AsyncSession = Depends(get_db)):
     query = text("SELECT * FROM signin WHERE username=:username")
-    result = await db.execute(query, {"username": username})
+    result = await db.execute(query, {"username": user})
     return result.fetchone()
-
-
-async def findRecipient(recipient: str, db: AsyncSession = Depends(get_db)):
-    query = select(Users).where(Users.username == recipient)
-    result = await db.execute(query)
-    return result.scalar_one_or_none()
-
-
-async def findSender(sender: str, db: AsyncSession = Depends(get_db)):
-    query = select(Users).where(Users.username == sender)
-    result = await db.execute(query)
-    return result.scalar_one_or_none()

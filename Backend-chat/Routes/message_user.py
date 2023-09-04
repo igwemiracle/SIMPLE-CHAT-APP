@@ -5,7 +5,7 @@ from sqlalchemy import select, or_, and_
 from Database.connection import get_db
 from Models.schema import MessageCreate
 from Models.sqlData import SavedMessage
-from Routes.crud import findRecipient, findSender, findUser
+from Routes.crud import findUser
 
 message_user = APIRouter()
 
@@ -14,12 +14,12 @@ message_user = APIRouter()
 async def Messages(msg_crt: MessageCreate,
                    db: AsyncSession = Depends(get_db)):
 
-    recipient_user = await findRecipient(recipient=msg_crt.recipient, db=db)
+    recipient_user = await findUser(user=msg_crt.recipient, db=db)
     if not recipient_user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail="Recipient does not exist!")
 
-    sender_user = await findSender(sender=msg_crt.sender, db=db)
+    sender_user = await findUser(user=msg_crt.sender, db=db)
     if not sender_user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail="Sender does not exist!")
@@ -62,11 +62,11 @@ async def getSavedMessages(username: str, db: AsyncSession = Depends(get_db)):
 @message_user.get("/saved_messages/{sender}/{recipient}")
 async def getSenderRecipient(sender: str, recipient: str, db: AsyncSession = Depends(get_db)):
 
-    check_sender = await findUser(username=sender, db=db)
+    check_sender = await findUser(user=sender, db=db)
     if not check_sender:
         raise HTTPException(status_code=404, detail="Sender does not exist")
 
-    check_recipient = await findUser(username=recipient, db=db)
+    check_recipient = await findUser(user=recipient, db=db)
     if not check_recipient:
         raise HTTPException(status_code=404, detail="Recipient does not exist")
 

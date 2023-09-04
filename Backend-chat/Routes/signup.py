@@ -49,7 +49,7 @@ async def View_All_Users(token: str = Depends(authenticate),
 @signup.get("/auth/view_user")
 async def ViewUser(current_user: str = Depends(get_current_user),
                    db: AsyncSession = Depends(get_db)):
-    user = await findUser(username=current_user, db=db)
+    user = await findUser(user=current_user, db=db)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
