@@ -35,12 +35,6 @@ async def get_user_by_email(email: str, db: AsyncSession = Depends(get_db)):
     return result.scalar()
 
 
-async def get_user_by_username(username: str, db: AsyncSession = Depends(get_db)):
-    query = select(Users).where(Users.username == username)
-    result = await db.execute(query)
-    return result.scalar()
-
-
 async def findUser(user: str, db: AsyncSession = Depends(get_db)):
     query = text("SELECT * FROM signin WHERE username=:username")
     result = await db.execute(query, {"username": user})
