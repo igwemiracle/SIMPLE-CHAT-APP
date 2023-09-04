@@ -2,6 +2,10 @@ from Authentication.jwt_handler import verify_access_token
 from fastapi.security import OAuth2PasswordBearer
 from fastapi import Depends, HTTPException, status
 from Authentication.hash_pwd import HashPassword
+from Models.sqlData import Users
+from Database.connection import engine
+from sqlalchemy.ext.asyncio import AsyncSession
+
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/signin/")
 HASH = HashPassword()

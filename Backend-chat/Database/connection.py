@@ -6,9 +6,8 @@ from starlette.config import Config
 config = Config(".env")
 SECRET_KEY = config.get("SECRET_KEY")
 SQLALCHEMY_DATABASE_URL = config.get("SQLALCHEMY_DATABASE_URL")
-
 engine = create_async_engine(
-    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
+    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": True})
 SessionLocal = async_sessionmaker(engine)
 
 
